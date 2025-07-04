@@ -1,8 +1,11 @@
 pub mod shape;
 pub mod tensor_data;
 
-use shape::{ElementAdd, Shape};
-use std::{fmt::Debug, ops::Add};
+use shape::{ElementOpp, Shape};
+use std::{
+    fmt::Debug,
+    ops::{Add, Sub},
+};
 use tensor_data::TensorData;
 
 /// A type for holding matrix/vector data
@@ -28,7 +31,7 @@ impl<T: Shape> Tensor<T> {
 
 impl<T> Add for Tensor<T>
 where
-    T: Shape + ElementAdd<Output = T> + Clone,
+    T: Shape + ElementOpp<Output = T> + Clone,
 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
@@ -38,6 +41,21 @@ where
         );
         let data = self.data + rhs.data;
 
+        Tensor::new(data.0)
+    }
+}
+
+impl<T> Sub for Tensor<T>
+where
+    T: Shape + ElementOpp<Output = T> + Clone,
+{
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self::Output {
+        assert_eq!(
+            self.dimension, rhs.dimension,
+            "Tensors must have same dimensions"
+        );
+        let data = self.data - rhs.data;
         Tensor::new(data.0)
     }
 }

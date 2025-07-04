@@ -4,9 +4,10 @@ pub trait Shape {
 }
 
 /// Trait for element-wise addition of tensor elements
-pub trait ElementAdd<Rhs = Self> {
+pub trait ElementOpp<Rhs = Self> {
     type Output;
     fn element_add(self, rhs: Rhs) -> Self::Output;
+    fn element_sub(self, rhs: Rhs) -> Self::Output;
 }
 
 impl<T> Shape for Vec<T>
@@ -23,9 +24,9 @@ where
 }
 
 // Implementation of ElementAdd for Vec<T>
-impl<T> ElementAdd for Vec<T>
+impl<T> ElementOpp for Vec<T>
 where
-    T: ElementAdd<Output = T> + Clone,
+    T: ElementOpp<Output = T> + Clone,
 {
     type Output = Vec<T>;
 
@@ -41,9 +42,22 @@ where
             .map(|(a, b)| a.element_add(b))
             .collect()
     }
+
+    fn element_sub(self, rhs: Self) -> Self::Output {
+        assert_eq!(
+            self.len(),
+            rhs.len(),
+            "Vectors must have same length for addition"
+        );
+
+        self.into_iter()
+            .zip(rhs.into_iter())
+            .map(|(a, b)| a.element_sub(b))
+            .collect()
+    }
 }
 
-use std::ops::Add;
+use std::ops::{Add, Sub};
 
 /// A helper trait for implementing ```Shape``` trait
 pub trait Numeric {}
@@ -66,14 +80,18 @@ impl Numeric for f64 {}
 //impl Numeric for f128 {}
 
 // Implement ElementAdd for all numeric types
-impl<T> ElementAdd for T
+impl<T> ElementOpp for T
 where
-    T: Numeric + Add<Output = T>,
+    T: Numeric + Add<Output = T> + Sub<Output = T>,
 {
     type Output = T;
 
     fn element_add(self, rhs: Self) -> Self::Output {
         self + rhs
+    }
+
+    fn element_sub(self, rhs: Self) -> Self::Output {
+        self - rhs
     }
 }
 
