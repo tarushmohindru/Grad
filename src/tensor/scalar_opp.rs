@@ -1,4 +1,4 @@
-use std::ops::Mul;
+use std::ops::{Div, Mul};
 
 use crate::tensor::shape::Numeric;
 
@@ -6,16 +6,22 @@ use crate::tensor::shape::Numeric;
 pub trait ScalarOpp<S> {
     type Output;
     fn scalar_mul(self, scalar: S) -> Self::Output;
+    fn scalar_div(self, scalar: S) -> Self::Output;
 }
 
 impl<S, T> ScalarOpp<S> for T
 where
-    T: Numeric + Mul<S, Output = T>,
+    T: Numeric + Mul<S, Output = T> + Div<S, Output = T>,
     S: Numeric + Copy,
 {
     type Output = Self;
+
     fn scalar_mul(self, scalar: S) -> Self::Output {
         self * scalar
+    }
+
+    fn scalar_div(self, scalar: S) -> Self::Output {
+        self / scalar
     }
 }
 
@@ -27,5 +33,9 @@ where
     type Output = Self;
     fn scalar_mul(self, scalar: S) -> Self::Output {
         self.into_iter().map(|a| a.scalar_mul(scalar)).collect()
+    }
+
+    fn scalar_div(self, scalar: S) -> Self::Output {
+        self.into_iter().map(|a| a.scalar_div(scalar)).collect()
     }
 }

@@ -112,6 +112,23 @@ where
     }
 }
 
+impl<S, T> Div<S> for Tensor<T>
+where
+    T: Shape + Clone + ScalarOpp<S, Output = T>,
+    S: Numeric + Copy,
+{
+    type Output = Self;
+    fn div(self, scalar: S) -> Self::Output {
+        let new_data = self
+            .data
+            .0
+            .into_iter()
+            .map(|x| x.scalar_div(scalar))
+            .collect();
+        Tensor::new(new_data)
+    }
+}
+
 impl<T> core::fmt::Display for Tensor<T>
 where
     T: Shape + Debug,

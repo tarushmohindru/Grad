@@ -99,6 +99,18 @@ where
         TensorData(self.0.into_iter().map(|a| a.scalar_mul(scalar)).collect())
     }
 }
+
+impl<S, T> Div<S> for TensorData<T>
+where
+    T: ScalarOpp<S, Output = T> + Clone,
+    S: Numeric + Copy,
+{
+    type Output = Self;
+    fn div(self, scalar: S) -> Self::Output {
+        TensorData(self.0.into_iter().map(|a| a.scalar_div(scalar)).collect())
+    }
+}
+
 impl<T> From<T> for TensorData<T>
 where
     T: Numeric,
