@@ -1,4 +1,5 @@
 pub mod element_opp;
+pub mod scalar_opp;
 pub mod shape;
 pub mod tensor_data;
 
@@ -9,6 +10,8 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 use tensor_data::TensorData;
+
+use crate::tensor::{scalar_opp::ScalarOpp, shape::Numeric};
 
 /// A type for holding matrix/vector data
 #[derive(Debug)]
@@ -89,6 +92,23 @@ where
         );
         let data = self.data / rhs.data;
         Tensor::new(data.0)
+    }
+}
+
+impl<T, S> Mul<S> for Tensor<T>
+where
+    T: Shape + Clone + ScalarOpp<S, Output = T>,
+    S: Numeric + Copy,
+{
+    type Output = Self;
+    fn mul(self, scalar: S) -> Self::Output {
+        let new_data = self
+            .data
+            .0
+            .into_iter()
+            .map(|x| x.scalar_mul(scalar))
+            .collect();
+        Tensor::new(new_data)
     }
 }
 

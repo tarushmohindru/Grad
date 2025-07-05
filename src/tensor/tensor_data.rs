@@ -1,5 +1,5 @@
-use crate::tensor::element_opp::ElementOpp;
 use crate::tensor::shape::Numeric;
+use crate::tensor::{element_opp::ElementOpp, scalar_opp::ScalarOpp};
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Debug, Clone)]
@@ -89,6 +89,16 @@ where
     }
 }
 
+impl<S, T> Mul<S> for TensorData<T>
+where
+    T: ScalarOpp<S, Output = T> + Clone,
+    S: Numeric + Copy,
+{
+    type Output = Self;
+    fn mul(self, scalar: S) -> Self::Output {
+        TensorData(self.0.into_iter().map(|a| a.scalar_mul(scalar)).collect())
+    }
+}
 impl<T> From<T> for TensorData<T>
 where
     T: Numeric,
