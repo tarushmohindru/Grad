@@ -1,6 +1,6 @@
-use std::ops::{Add, Sub};
-
-use crate::tensor::shape::{ElementOpp, Numeric};
+use crate::tensor::element_opp::ElementOpp;
+use crate::tensor::shape::Numeric;
+use std::ops::{Add, Mul, Sub};
 
 #[derive(Debug, Clone)]
 pub struct TensorData<T>(pub Vec<T>);
@@ -42,6 +42,27 @@ where
                 .into_iter()
                 .zip(rhs.0.into_iter())
                 .map(|(a, b)| a.element_sub(b))
+                .collect(),
+        )
+    }
+}
+
+impl<T> Mul for TensorData<T>
+where
+    T: ElementOpp<Output = T> + Clone,
+{
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        assert_eq!(
+            self.0.len(),
+            rhs.0.len(),
+            "Tensors must have same dimension"
+        );
+        TensorData(
+            self.0
+                .into_iter()
+                .zip(rhs.0.into_iter())
+                .map(|(a, b)| a.element_mul(b))
                 .collect(),
         )
     }

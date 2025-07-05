@@ -1,10 +1,12 @@
+pub mod element_opp;
 pub mod shape;
 pub mod tensor_data;
 
-use shape::{ElementOpp, Shape};
+use element_opp::ElementOpp;
+use shape::Shape;
 use std::{
     fmt::Debug,
-    ops::{Add, Sub},
+    ops::{Add, Mul, Sub},
 };
 use tensor_data::TensorData;
 
@@ -56,6 +58,21 @@ where
             "Tensors must have same dimensions"
         );
         let data = self.data - rhs.data;
+        Tensor::new(data.0)
+    }
+}
+
+impl<T> Mul for Tensor<T>
+where
+    T: Shape + ElementOpp<Output = T> + Clone,
+{
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        assert_eq!(
+            self.dimension, rhs.dimension,
+            "Tensers must have same dimension"
+        );
+        let data = self.data * rhs.data;
         Tensor::new(data.0)
     }
 }
