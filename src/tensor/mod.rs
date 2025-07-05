@@ -1,7 +1,10 @@
 pub mod element_opp;
+pub mod macros;
 pub mod scalar_opp;
 pub mod shape;
 pub mod tensor_data;
+
+pub use macros::tensor;
 
 use element_opp::ElementOpp;
 use shape::Shape;
@@ -14,7 +17,7 @@ use tensor_data::TensorData;
 use crate::tensor::{scalar_opp::ScalarOpp, shape::Numeric};
 
 /// A type for holding matrix/vector data
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Tensor<T>
 where
     T: Shape,
