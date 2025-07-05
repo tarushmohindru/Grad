@@ -1,4 +1,4 @@
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 use crate::tensor::shape::Numeric;
 
@@ -8,6 +8,7 @@ pub trait ElementOpp<Rhs = Self> {
     fn element_add(self, rhs: Rhs) -> Self::Output;
     fn element_sub(self, rhs: Rhs) -> Self::Output;
     fn element_mul(self, rhs: Rhs) -> Self::Output;
+    fn element_div(self, rhs: Rhs) -> Self::Output;
 }
 
 // Implementation of ElementAdd for Vec<T>
@@ -49,11 +50,18 @@ where
             .map(|(a, b)| a.element_mul(b))
             .collect()
     }
+
+    fn element_div(self, rhs: Self) -> Self::Output {
+        self.into_iter()
+            .zip(rhs.into_iter())
+            .map(|(a, b)| a.element_div(b))
+            .collect()
+    }
 }
 
 impl<T> ElementOpp for T
 where
-    T: Numeric + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+    T: Numeric + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
 {
     type Output = T;
 
@@ -67,5 +75,9 @@ where
 
     fn element_mul(self, rhs: Self) -> Self::Output {
         self * rhs
+    }
+
+    fn element_div(self, rhs: Self) -> Self::Output {
+        self / rhs
     }
 }

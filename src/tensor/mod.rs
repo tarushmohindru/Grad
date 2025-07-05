@@ -6,7 +6,7 @@ use element_opp::ElementOpp;
 use shape::Shape;
 use std::{
     fmt::Debug,
-    ops::{Add, Mul, Sub},
+    ops::{Add, Div, Mul, Sub},
 };
 use tensor_data::TensorData;
 
@@ -73,6 +73,21 @@ where
             "Tensers must have same dimension"
         );
         let data = self.data * rhs.data;
+        Tensor::new(data.0)
+    }
+}
+
+impl<T> Div for Tensor<T>
+where
+    T: Shape + ElementOpp<Output = T> + Clone,
+{
+    type Output = Self;
+    fn div(self, rhs: Self) -> Self::Output {
+        assert_eq!(
+            self.dimension, rhs.dimension,
+            "Tensers must have same dimension"
+        );
+        let data = self.data / rhs.data;
         Tensor::new(data.0)
     }
 }
